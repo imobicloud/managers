@@ -52,6 +52,7 @@ nav = {
 
 icon size: 
 	- ios:
+		+ 3x: 66
 		+ 2x: 44
 		+ 1x: 22 
 	- android 
