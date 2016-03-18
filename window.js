@@ -156,6 +156,11 @@ function WindowManager() {
 		return UICache.get(index);
 	}
 
+	function remove(start, end) {
+	  	UICache.remove(start, end);
+	  	Ti.API.log('Window Manager: Remove from ' + start + ' to ' + end);
+	}
+
 	function reset() {
 	  	UICache.reset();
 	  	Ti.API.log('Window Manager: Reset!');
@@ -231,6 +236,7 @@ function WindowManager() {
 		loadPrevious: loadPrevious,
 		loadPreviousOrReset: loadPreviousOrReset,
 		getCache: getCache,
+		remove: remove,
 		reset: reset,
 		exit: exit
 	};

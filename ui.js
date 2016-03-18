@@ -158,6 +158,7 @@ function UIManager() {
         get: get,
         load: load,
         loadPrevious: loadPrevious,
+        remove: remove,
         reset: reset
     };
 };
