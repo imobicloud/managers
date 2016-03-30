@@ -43,8 +43,9 @@ function UIManager() {
 	};
 	
 	function destroyObject(params) {
-		var controller = params.controller;
+		if (params == null) { return; }
 		
+		var controller = params.controller;
 		params._alreadyCleanup !== true && controller.cleanup(true);
 		controller.unload();
 		
