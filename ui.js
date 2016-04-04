@@ -43,8 +43,6 @@ function UIManager() {
 	};
 	
 	function destroyObject(params) {
-		if (params == null) { return; }
-		
 		var controller = params.controller;
 		params._alreadyCleanup !== true && controller.cleanup(true);
 		controller.unload();
@@ -79,15 +77,15 @@ function UIManager() {
 		current._alreadyCleanup = true;
 		current.controller.cleanup();
 		
+		// destroy un-used object
+		remove(start, end);
+		
 		// reload previous
 		if (isReload !== false) {
 			var prev = cache[end - 1];
 			prev.controller.reload(data);
 			prev._alreadyCleanup = false;
 		}
-		
-		// destroy un-used object
-		remove(start, end);
 		
 		return true;
 	};

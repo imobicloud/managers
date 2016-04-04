@@ -1,9 +1,5 @@
 exports.load = function load(win, nav) {
   	if (nav.titleControl) {
-  		if ( parseInt(Ti.Platform.version.split(".")[0], 10) > 6 ) {
-  			nav.titleControl.borderColor = nav.titleControl.barColor; 
-  		}
-  		
 		win.titleControl = nav.titleControl;
 	} else if (nav.titleImage) {
 		win.titleImage = nav.titleImage;
