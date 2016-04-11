@@ -17,7 +17,7 @@ function WindowManager() {
 		
 		//
 		
-		Ti.API.log('Window Manager: initialized');
+		Ti.API.info('Window Manager: initialized');
 	}
 
 	function winLoaded(params, e) {
@@ -103,7 +103,7 @@ function WindowManager() {
 			}
 		}
 		
-		Ti.API.log('Window Manager: Cached window: ' + getCache().length);
+		Ti.API.info('Window Manager: Cached window: ' + getCache().length);
 	}
 	
 	function windowOpened(e) {
@@ -145,11 +145,11 @@ function WindowManager() {
 	 }
 	 * */
 	function load(params) {
-		Ti.API.log('Window Manager: Load window ' + params.url + ': ' + JSON.stringify(params.data));
+		Ti.API.info('Window Manager: Load window ' + params.url + ': ' + JSON.stringify(params.data));
 		
 		UICache.load(params);
 
-		Ti.API.log('Window Manager: Cached window: ' + getCache().length);
+		Ti.API.info('Window Manager: Cached window: ' + getCache().length);
 	};
 	
 	function getCache(index) {
@@ -158,12 +158,12 @@ function WindowManager() {
 
 	function remove(start, end) {
 	  	UICache.remove(start, end);
-	  	Ti.API.log('Window Manager: Remove from ' + start + ' to ' + end);
+	  	Ti.API.info('Window Manager: Remove from ' + start + ' to ' + end);
 	}
 
 	function reset() {
 	  	UICache.reset();
-	  	Ti.API.log('Window Manager: Reset!');
+	  	Ti.API.info('Window Manager: Reset!');
 	}
 
 	/*
@@ -194,7 +194,7 @@ function WindowManager() {
 			activity && activity.finish();
 		}
 
-		Ti.API.log('Window Manager: Exit!');
+		Ti.API.info('Window Manager: Exit!');
 	}
 	
 	function androidback(e) {
