@@ -1,4 +1,4 @@
-exports.load = function load(win, nav) {
+exports.load = function load(win, nav, G) {
   	if (nav.titleControl) {
 		win.titleControl = nav.titleControl;
 	} else if (nav.titleImage) {
@@ -10,55 +10,57 @@ exports.load = function load(win, nav) {
 	var leftNavButtons = nav.leftNavButtons;
 	if (leftNavButtons != null) {
 		if (leftNavButtons.length == 1) {
-			win.leftNavButton  = createNavButton(leftNavButtons[0]);
+			win.leftNavButton  = createNavButton(leftNavButtons[0], G);
 		} else {
-			// win.leftNavButtons = createNavButtons(leftNavButtons);  //TODO: click event does not fire with leftNavButtons
-			   win.leftNavButton  = createNavButtons(leftNavButtons);
+			// win.leftNavButtons = createNavButtons(leftNavButtons, G);  //TODO: click event does not fire with leftNavButtons
+			   win.leftNavButton  = createNavButtons(leftNavButtons, G);
 		}
 	}	
 		
 	var rightNavButtons = nav.rightNavButtons;
 	if (rightNavButtons) {
 		if (rightNavButtons.length == 1) {
-			win.rightNavButton  = createNavButton(rightNavButtons[0]);
+			win.rightNavButton  = createNavButton(rightNavButtons[0], G);
 		} else {
-			// win.rightNavButtons = createNavButtons(rightNavButtons); //TODO: click event does not fire with rightNavButtons
-			   win.rightNavButton  = createNavButtons(rightNavButtons);
+			// win.rightNavButtons = createNavButtons(rightNavButtons, G); //TODO: click event does not fire with rightNavButtons
+			   win.rightNavButton  = createNavButtons(rightNavButtons, G);
 		}
 	}
 };
 
-function createNavButtons(params) {
+function createNavButtons(params, G) {
 	//TODO: click event does not fire with rightNavButtons
 	/*
 	var navButtons = [];
   	for(var i = params.length - 1; i >= 0; i--){
-	  	navButtons.push( createNavButton(params[i]) );
+	  	navButtons.push( createNavButton(params[i], G) );
 	};
 	return navButtons;
 	*/
 	
 	var view = Ti.UI.createView({ width: Ti.UI.SIZE, layout: 'horizontal' });
   	for(var i=0,ii=params.length; i<ii; i++){
-  		var button = createNavButton(params[i]);
+  		var button = createNavButton(params[i], G);
 	  	view.add(button);
 	};
 	return view;
 }
 
-function createNavButton(params) {
+function createNavButton(params, G) {
 	if (params.callback) {
-		var button = Ti.UI.createButton({ backgroundImage: 'NONE' });
-		if (params.icon) {
-			button.image = params.icon;
-		} 
-		if (params.title) {
-			button.title = params.title;
+		var styles = _.omit(params, ['callback', 'icon']);
+		!styles.backgroundImage && (styles.backgroundImage = 'NONE');
+		
+		var button;
+		if (G) {
+			button = G.UI.create('Button', styles);
+		} else {
+			button = Ti.UI.createButton(styles);
 		}
-		if (params.width) {
-			button.width = params.width;
-		};
+		
+		params.icon && (button.image = params.icon);
 		button.addEventListener('click', params.callback);
+		
 		return button;
 	} else {
 		return params;
