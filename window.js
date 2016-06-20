@@ -27,28 +27,12 @@ function WindowManager() {
 		
 		/*
 		 NOTES:
-		 
-		 - To use managers with widget: nl.fokkezb.drawer / NappDrawer
-		   
-		   + hide nav bar
-		   		if (OS_ANDROID) {
-					$.drawer.window.title = 'Home';
-				}
-		   
-		   + export a custom getView funtion
-                exports.getView = function() {
-                    if (OS_IOS) { 
-						return $.drawer.getCenterWindow();
-					} else if (OS_ANDROID) {
-						return $.drawer.window;
-					}
-                };
-                
-         - For widgets that return a window
+		 - To use managers with widget: nl.fokkezb.drawer / NappDrawer, view this demo
+                https://github.com/ptquang86/menu
+         - To use managers with widgets that return a window
                 exports.getView = function() {
                     return $.widgetName.windowId;
                 };
-                
 		 * */
 		
 		win.addEventListener('open', windowOpened);
@@ -58,7 +42,7 @@ function WindowManager() {
 		
 		// make window visible
 		if (params.controller.doShow == null) {
-			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Titanium.UI.iOS.NavigationWindow') {
+			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Ti.UI.iOS.NavigationWindow') {
 				if (params.isReset !== false) {
 					createNavigationWindow(params, win);
 				} else {
@@ -70,6 +54,9 @@ function WindowManager() {
 					}
 				}
 			} else {
+				if (win.apiName == 'Ti.UI.iOS.NavigationWindow') {
+					params.navigationWindow = win;
+				}
 				win.open(params.openAnimation);
 			}
 		} else {
@@ -89,7 +76,7 @@ function WindowManager() {
 			win.removeEventListener('close', windowClosed);
 			
 			if (params.controller.doHide == null) {
-				if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Titanium.UI.iOS.NavigationWindow') {
+				if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Ti.UI.iOS.NavigationWindow') {
 					if (params.navigationWindow) {
 						params.navigationWindow.close(params.closeAnimation);
 					} else {
@@ -130,8 +117,13 @@ function WindowManager() {
 	function getNavigationWindow() {
 	  	var cache = getCache(),
 	  		navigationWindow;
-	  	for(var i = cache.length - 1; i >= 0; i--){
-			if (navigationWindow = cache[i].navigationWindow) {
+	  	for (var i = cache.length - 1; i >= 0; i--) {
+	  		var params = cache[i];
+			if (params.navigationWindow) {
+				navigationWindow = params.navigationWindow;
+				break;
+			} else if (params.controller.getNavigationWindow) {
+				navigationWindow = params.controller.getNavigationWindow();
 				break;
 			}
 		};
