@@ -31,15 +31,17 @@ function WindowManager() {
 		 - To use managers with widget: nl.fokkezb.drawer / NappDrawer
 		   
 		   + hide nav bar
-		   		if (OS_IOS) {
-					$.drawer.window.navBarHidden = true;
-				} else {
+		   		if (OS_ANDROID) {
 					$.drawer.window.title = 'Home';
 				}
 		   
 		   + export a custom getView funtion
                 exports.getView = function() {
-                    return $.drawer.window;
+                    if (OS_IOS) { 
+						return $.drawer.getCenterWindow();
+					} else if (OS_ANDROID) {
+						return $.drawer.window;
+					}
                 };
                 
          - For widgets that return a window
@@ -56,7 +58,7 @@ function WindowManager() {
 		
 		// make window visible
 		if (params.controller.doShow == null) {
-			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.hasNavigationWindow != 'false') {
+			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Titanium.UI.iOS.NavigationWindow') {
 				if (params.isReset !== false) {
 					createNavigationWindow(params, win);
 				} else {
@@ -87,7 +89,7 @@ function WindowManager() {
 			win.removeEventListener('close', windowClosed);
 			
 			if (params.controller.doHide == null) {
-				if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.hasNavigationWindow != 'false') {
+				if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Titanium.UI.iOS.NavigationWindow') {
 					if (params.navigationWindow) {
 						params.navigationWindow.close(params.closeAnimation);
 					} else {
