@@ -40,6 +40,10 @@ function WindowManager() {
 		// cleanup cache, in case of window is closed not by Window Manager
 		win.addEventListener('close', windowClosed);
 		
+		if (win.apiName == 'Ti.UI.iOS.NavigationWindow') {
+			params.navigationWindow = win;
+		}
+		
 		// make window visible
 		if (params.controller.doShow == null) {
 			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Ti.UI.iOS.NavigationWindow') {
@@ -54,9 +58,6 @@ function WindowManager() {
 					}
 				}
 			} else {
-				if (win.apiName == 'Ti.UI.iOS.NavigationWindow') {
-					params.navigationWindow = win;
-				}
 				win.open(params.openAnimation);
 			}
 		} else {
