@@ -16,10 +16,12 @@ function UIManager() {
 	  - remove: null or 1, 2, ...: delete 1, 2, ... previous objects
 	 * */
 	function load(params) {
-		Ti.API.info('UI Manager: load ' + JSON.stringify( params ));
+		Ti.API.info('UI Manager: Load ' + params.url + ': ' + JSON.stringify(params.data));
+		
+		var hasPrevious = cache.length > 0;
 		
 		// cleanup previous
-		if (cache.length) {
+		if (hasPrevious) {
 			var prev = getCache(-1);
 			prev._alreadyCleanup = true;
 			prev.controller.cleanup();
@@ -47,10 +49,12 @@ function UIManager() {
 		}
 		
 		// delete previous
-		if (params.reset) {
-			splice(0, -1);
-		} else if (params.remove) {
-			splice(- params.remove - 1, params.remove);
+		if (hasPrevious) {
+			if (params.reset) {
+				splice(0, -1);
+			} else if (params.remove) {
+				splice(- params.remove - 1, params.remove);
+			}
 		}
 		
 		Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
