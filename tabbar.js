@@ -75,10 +75,10 @@ function TabbarManager() {
 	
 	/*
 	 params = {
-		url : url,				// the url of the page
-		data : data,			// data for that page
-		isReset : isReset,		// remove previous pages or not, default is true
-		tabIndex : tabIndex		// tab index
+		url: url,			// the url of the page
+		data: data,			// data for that page
+		reset: false,		// remove previous pages or not, default is false
+		tabIndex: tabIndex	// tab index
 	 }
 	 * */
 	function load(params) {
@@ -95,15 +95,23 @@ function TabbarManager() {
 
 		if (params.url) {
 			// does not allow remove root window
-			params.isReset = false;
+			params.reset = false;
 			
 			UICaches[tabIndex].load(params);
 			
-			params._alreadyInitialize = true;
-			var init = params.controller.init;
-		  	init && init(params);
+			params._alreadyLoad = true;
+			
+			// TODO: Deprecated
+		  	var init = params.controller.init;
+		  	if (init) {
+		  		params.controller.load = init;
+		  		Ti.API.error('Tabbar Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+		  	}
+			
+			var load = params.controller.load;
+		  	load && load(params);
 		  	
-		} else if (params.isReset !== false) {
+		} else if (params.reset) {
 			var len = getCache(activeTab).length;
 			if (len > 1) {
 				loadPrevious(params.data, len - 1);
@@ -133,7 +141,7 @@ function TabbarManager() {
 
 	function getCache(tabIndex, cacheIndex) {
 		(tabIndex === -1) && (tabIndex = activeTab);
-		return UICaches[tabIndex].get(cacheIndex);
+		return UICaches[tabIndex].getCache(cacheIndex);
 	};
 
 	function getActiveTab() {
@@ -161,15 +169,23 @@ function TabbarManager() {
 		
 		if (willReload !== false) {
 			// reload current tab
-			if (current._alreadyInitialize) {
+			if (current._alreadyLoad) {
 				current.controller.reload();
 				current.controller.getView().visible = true;
 			} 
-			// or init
+			// or load
 			else {
-				current._alreadyInitialize = true;
-				var init = current.controller.init;
-				init && init(current);
+				current._alreadyLoad = true;
+				
+				// TODO: Deprecated
+			  	var init = current.controller.init;
+			  	if (init) {
+			  		current.controller.load = init;
+			  		Ti.API.error('Tabbar Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+			  	}
+				
+				var load = current.controller.load;
+				load && load(current);
 			}
 		} else if (willShowUp !== false) {
 			current.controller.getView().visible = true;

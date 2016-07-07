@@ -52,7 +52,7 @@ function TabGroupManager() {
 
 			// render tab button
 			
-			tabs.push(Ti.UI.createTab( _.extend(tab, { window: UICache.get(0).controller.getView() }) ));
+			tabs.push(Ti.UI.createTab( _.extend(tab, { window: UICache.getCache(0).controller.getView() }) ));
 		};
 
 		tabgroup.setTabs(tabs);
@@ -94,10 +94,10 @@ function TabGroupManager() {
 	
 	/*
 	 params = {
-		url : url,				// the url of the page
-		data : data,			// data for that page
-		isReset : isReset,		// remove previous pages or not, default is true
-		tabIndex : tabIndex		// tab index
+		url: url,			// the url of the page
+		data: data,			// data for that page
+		reset: false,		// remove previous pages or not, default is false
+		tabIndex: tabIndex	// tab index
 	 }
 	 * */
 	function load(params) {
@@ -117,7 +117,7 @@ function TabGroupManager() {
 
 		if (params.url) {
 			// tabgroup window does not allow remove root window
-			params.isReset = false;
+			params.reset = false;
 			
 			UICaches[tabIndex].load(params);
 			
@@ -134,7 +134,7 @@ function TabGroupManager() {
 			// if (OS_ANDROID) {
 				// win.addEventListener('androidback', androidback);
 			// }
-		} else if (params.isReset !== false) {
+		} else if (params.reset) {
 			var len = getCache(activeTab).length;
 			if (len > 1) {
 				loadPrevious(params.data, len - 1);
@@ -147,10 +147,18 @@ function TabGroupManager() {
 	}
 	
 	function windowOpened(e) {
-	  	var cache = getCache(activeTab, -1),
-			init  = cache.controller.init;
-		cache._alreadyInitialize = true;	
-	  	init && init(cache);
+	  	var cache = getCache(activeTab, -1);
+		cache._alreadyLoad = true;
+		
+		// TODO: Deprecated
+	  	var init = cache.controller.init;
+	  	if (init) {
+	  		cache.controller.load = init;
+	  		Ti.API.error('Tabgroup Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+	  	}
+		
+		var load = cache.controller.load;	
+	  	load && load(cache);
 	}
 	
 	function windowClosed(e) {
@@ -173,7 +181,7 @@ function TabGroupManager() {
 
 	function getCache(tabIndex, cacheIndex) {
 		(tabIndex === -1) && (tabIndex = activeTab);
-		return UICaches[tabIndex].get(cacheIndex);
+		return UICaches[tabIndex].getCache(cacheIndex);
 	};
 
 	function getActiveTab() {
@@ -218,13 +226,21 @@ function TabGroupManager() {
 		}
 		
 		var current = getCache(tabIndex, -1);
-		if (current._alreadyInitialize) {
+		if (current._alreadyLoad) {
 			// reload current tab
 			current.controller.reload();
 		} else {
-			current._alreadyInitialize = true;
-			var init = current.controller.init;
-			init && init(current);
+			current._alreadyLoad = true;
+			
+			// TODO: Deprecated
+		  	var init = current.controller.init;
+		  	if (init) {
+		  		current.controller.load = init;
+		  		Ti.API.error('Tabgroup Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+		  	}
+			
+			var load = current.controller.load;
+			load && load(current);
 		}
 		
 		fireEvent('tabgroup:focus', { cache: current });

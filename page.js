@@ -49,23 +49,27 @@ function PageManager() {
 	
 	function pageVisible(e) {
 	  	e.source.removeEventListener('postlayout', pageVisible);
-	  	var cache = getCache(-1),
-	  		init  = cache.controller.init;
-	  	init && init(cache);  
+	  	var cache = getCache(-1);
+	  	
+	  	// TODO: Deprecated
+	  	var init = cache.controller.init;
+	  	if (init) {
+	  		cache.controller.load = init;
+	  		Ti.API.error('Page Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+	  	}
+	  	
+	  	var load = cache.controller.load;
+	  	load && load(cache);  
 	}
 	
 	/*
 	 params:
 	  - url: the url of the page
 	  - data: data for that page
-	  - isReset: remove previous page or not, default is true
+	  - reset: remove previous page or not, default is false
 	 * */
 	function load(params) {
-		Ti.API.log('Page Manager: Load page ' + params.url + ': ' + JSON.stringify( params.data ));
-		
 		UICache.load(params);
-	  	
-		Ti.API.log('Page Manager: Cached page: ' + UICache.get().length);
 	};
 	
 	/*
@@ -76,16 +80,16 @@ function PageManager() {
 	function loadPrevious(data, count) {
 	  	UICache.loadPrevious(data, count);
 		
-		Ti.API.log('Page Manager: Cached page: ' + UICache.get().length);
+		Ti.API.log('Page Manager: Cached page: ' + UICache.getCache().length);
 	};
 	
 	function getCache(index) {
-	  	return UICache.get(index); 
+	  	return UICache.getCache(index); 
 	}
 	
 	function reset() {
 		UICache.reset();
-	  	Ti.API.log('Page Manager: Reset! Cached page: ' + UICache.get().length);
+	  	Ti.API.log('Page Manager: Reset! Cached page: ' + UICache.getCache().length);
 	}
 	
 	function on(type, callback) {

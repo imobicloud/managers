@@ -47,7 +47,7 @@ function WindowManager() {
 		// make window visible
 		if (params.controller.doShow == null) {
 			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Ti.UI.iOS.NavigationWindow') {
-				if (params.isReset !== false) {
+				if (params.reset) {
 					createNavigationWindow(params, win);
 				} else {
 					var navigationWindow = getNavigationWindow();
@@ -97,9 +97,17 @@ function WindowManager() {
 	}
 	
 	function windowOpened(e) {
-	  	var cache = getCache(-1),
-	  		init  = cache.controller.init;
-	  	init && init(cache);  
+	  	var cache = getCache(-1);
+	  	
+	  	// TODO: Deprecated
+	  	var init = cache.controller.init;
+	  	if (init) {
+	  		cache.controller.load = init;
+	  		Ti.API.error('Window Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+	  	}
+	  	
+	  	var load = cache.controller.load;
+	  	load && load(cache);  
 	}
 	
 	function windowClosed(e) {
@@ -135,25 +143,27 @@ function WindowManager() {
 	 params ={
 		url: '',			// the url of the window
 		data: {},			// data for that window
-		isReset : true,		// remove previous windows or not, default is true
+		reset: false,		// remove previous windows or not, default is false
 		animated: true
 	 }
 	 * */
 	function load(params) {
-		Ti.API.info('Window Manager: Load window ' + params.url + ': ' + JSON.stringify(params.data));
-		
 		UICache.load(params);
-
-		Ti.API.info('Window Manager: Cached window: ' + getCache().length);
 	};
 	
 	function getCache(index) {
-		return UICache.get(index);
+		return UICache.getCache(index);
 	}
 
 	function remove(start, end) {
+		// TODO: Deprecated
+		Ti.API.error('Window Manager: [remove] function is deprecated.\nPlease use [splice(start, count)] function instead.');
 	  	UICache.remove(start, end);
 	  	Ti.API.info('Window Manager: Remove from ' + start + ' to ' + end);
+	}
+	
+	function splice(start, count) {
+		UICache.splice(start, count);
 	}
 
 	function reset() {
@@ -232,6 +242,7 @@ function WindowManager() {
 		loadPreviousOrReset: loadPreviousOrReset,
 		getCache: getCache,
 		remove: remove,
+		splice: splice,
 		reset: reset,
 		exit: exit
 	};

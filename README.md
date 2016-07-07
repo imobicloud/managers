@@ -7,6 +7,30 @@ ui.js is used locally inside window.js, tabgroup.js, page.js and plugins.js.
 
 plugins.js contains useful plugins for window and tabgroup
 
+## UI Manager
+
+Change log: 
+
+  + 7 July, 2016:
+    - Deprecate [get] function
+    - Add [getCache] function to replace [get] function. Parameter:
+      index: cache index to get
+    - Deprecate [remove] function
+    - Add [splice] function to replace [remove] function. Parameters:
+      start: start index to remove
+      count: number of object to remove
+    - Refactor [loadPrevious] function
+    - Refactor [load] function
+      * replace function call [remove] with [splice] to remove previous pages.
+      * Deprecate [isReset]
+      * Add [reset] parameter to replace [isReset] parameter
+        reset == true:  reset the flow, remove all objects
+        reset == false: add object to flow
+        reset == null:  same as reset == false
+      * add [remove] parameter to remove previous pages. Required: [reset] parameter must != true.
+        remove == null: ignore
+        remove == 1:    remove previous page
+        remove == n:    remove n previous pages
 
 ## Window Manager
 
@@ -22,21 +46,21 @@ index.js
 
 	// open a window
 	winManager.load({
-		url: 'path_to_window'
+		url: 'path_to_window',
+		reset: true
 	});	
 
 	// open a child window
 	winManager.load({
-		url: 'path_to_child_window',
-		isReset: false
+		url: 'path_to_child_window'
 	});	
 
 	// get data
 	var infos = winManager.getCache();
 	Ti.API.log(infos);
 	/* [
-		{ url: 'path_to_window', isReset: true },
-		{ url: 'path_to_child_window', isReset: false }
+		{ url: 'path_to_window', reset: true },
+		{ url: 'path_to_child_window', reset: false }
 	] */
 
 	// back to parent window
@@ -45,13 +69,13 @@ index.js
 	// open a new window, remove other windows
 	winManager.load({
 		url: 'path_to_new_window',
-		isReset: true,
+		reset: true,
 		data: 123 				// data for this window
 	});	
 
 	// get current window info
 	var info = winManager.getCache(-1);
-	Ti.API.log(info); // { url: 'path_to_new_window', isReset: true, data: 123 }
+	Ti.API.log(info); // { url: 'path_to_new_window', reset: true, data: 123 }
 
 	// exit the app
 	winManager.exit();
@@ -69,6 +93,26 @@ index.js
 	function windowOpen(params) {}
 
 	function windowClose(params, win) {}	
+
+Change log: 
+
+  + 7 July, 2016:
+	- Deprecate [remove] function
+    - Add [splice] function to replace [remove] function. Parameters:
+      start: start index to remove
+      count: number of object to remove
+    - Refactor [load] function
+      * Deprecate [isReset]
+      * Add [reset] parameter to replace [isReset] parameter
+        reset == true:  reset the flow, remove all objects
+        reset == false: add object to flow
+        reset == null:  same as reset == false
+      * add [remove] parameter to remove previous pages. Required: [reset] parameter must != true.
+        remove == null: ignore
+        remove == 1:    remove previous page
+        remove == n:    remove n previous pages 
+    - Deprecate [exports.init] callback
+    - Support [exports.load] callback to replace [exports.init] callback
 
 ### Plugins usage
 
@@ -127,7 +171,7 @@ js
 	// open a child window in Tab 2
 	tabGroup.load({
 		url: 'path_to_window',
-		isReset: false,
+		reset: false,
 		data: null,
 		tabIndex: 1
 	});
@@ -189,4 +233,36 @@ Default plugins are: Activity Indicator, a hidden textfield for auto hide keyboa
 		onFocus:  plugins.tabGroupFocussed
 	});
 
+Change log: 
+
+  + 7 July, 2016:
+    - Refactor [load] function
+      * Deprecate [isReset]
+      * Add [reset] parameter to replace [isReset] parameter
+        reset == true:  reset the flow, remove all objects
+        reset == false: add object to flow
+        reset == null:  same as reset == false
+      * add [remove] parameter to remove previous pages. Required: [reset] parameter must != true.
+        remove == null: ignore
+        remove == 1:    remove previous page
+        remove == n:    remove n previous pages 
+    - Deprecate [exports.init] callback
+    - Support [exports.load] callback to replace [exports.init] callback
+
 ## Page Manager
+
+Change log: 
+
+  + 7 July, 2016:
+    - Refactor [load] function
+      * Deprecate [isReset]
+      * Add [reset] parameter to replace [isReset] parameter
+        reset == true:  reset the flow, remove all objects
+        reset == false: add object to flow
+        reset == null:  same as reset == false
+      * add [remove] parameter to remove previous pages. Required: [reset] parameter must != true.
+        remove == null: ignore
+        remove == 1:    remove previous page
+        remove == n:    remove n previous pages 
+    - Deprecate [exports.init] callback
+    - Support [exports.load] callback to replace [exports.init] callback

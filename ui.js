@@ -10,21 +10,23 @@ function UIManager() {
 	
 	/*
 	 params:
-	  - url: the url of the object
-	  - data: data for that object
-	  - isReset: remove previous object or not, default is true
+	  - url: ''
+	  - data: null or {}
+	  - reset: null, false or true: delete previous objects or not
+	  - remove: null or 1, 2, ...: delete 1, 2, ... previous objects
 	 * */
 	function load(params) {
+		Ti.API.info('UI Manager: load ' + JSON.stringify( params ));
+		
 		// cleanup previous
 		if (cache.length) {
-			var prev = cache[cache.length - 1];
+			var prev = getCache(-1);
 			prev._alreadyCleanup = true;
 			prev.controller.cleanup();
 		}
 		
 		// load new
 		var controller = Alloy.createController(params.url, params.data);
-		delete params.data;
 		
 		// apply default functions
 		(controller.cleanup == null) && (controller.cleanup = emptyFunction);
@@ -38,11 +40,25 @@ function UIManager() {
 		
 		fireEvent('ui:show', params);
 		
-		// remove previous
-		(params.isReset !== false) && remove(-2, 0);
+		// TODO: Deprecated
+		if (params.isReset != null) {
+			params.reset = params.isReset;
+			Ti.API.error('UI Manager: [isReset] parameter is deprecated.\nPlease use [reset] parameter instead.');
+		}
+		
+		// delete previous
+		if (params.reset) {
+			splice(0, -1);
+		} else if (params.remove) {
+			splice(- params.remove - 1, params.remove);
+		}
+		
+		Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
 	};
 	
 	function destroyObject(params) {
+		if (params == null) { return; }
+		
 		var controller = params.controller;
 		params._alreadyCleanup !== true && controller.cleanup(true);
 		controller.unload();
@@ -53,39 +69,26 @@ function UIManager() {
 	/*
 	 params: 
 	  - data: new data for current object
-	  - count: number of previous object will be removed
+	  - count: number of previous object will be deleted
 	 * */
 	function loadPrevious(data, count, isReload) {
-		var len = cache.length;
+		Ti.API.info('UI Manager: loadPrevious ' + JSON.stringify( data ));
 		
-		if (len < 2) {
-			return false;
-		}
+		if (cache.length < 2) { return false; }
 		
+		// destroy current object
 		// if count == null or count == 0, set count = 1
 		!count && (count = 1);
-		
-		var start = len - 1,
-			end = len - count;
-		
-		if (end < 1) {
-			end = 1;
-		}
-		
-		// cleanup current
-		var current = cache[start];
-		current._alreadyCleanup = true;
-		current.controller.cleanup();
-		
-		// destroy un-used object
-		remove(start, end);
+		splice(cache.length - count, count);
 		
 		// reload previous
 		if (isReload !== false) {
-			var prev = cache[end - 1];
+			var prev = getCache(-1);
 			prev.controller.reload(data);
 			prev._alreadyCleanup = false;
 		}
+		
+		Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
 		
 		return true;
 	};
@@ -94,7 +97,7 @@ function UIManager() {
 	 return array if index is null
 	 if index is negative: start is the last index - index
 	 * */
-	function get(index) {
+	function getCache(index) {
 		if (index == null) {
 			return cache; 					// cache = [ { url: '', controller: object } ]
 		} else if (index < 0) {
@@ -110,6 +113,9 @@ function UIManager() {
 	 if start is negative: start is the last index - start
 	 * */
 	function remove(start, end) {
+		// TODO: Deprecated
+		Ti.API.error('UIManager: [remove] function is deprecated.\nPlease use [splice(start, count)] function instead.');
+		
 		if (start == null) {
 			start = cache.length - 1;
 		} else if (start < 0) {
@@ -123,13 +129,46 @@ function UIManager() {
 		cache.splice(end, start - end + 1);
 	}
 	
-	// remove all object
-	// same as remove(-1, 0);
+	/*
+	 splice objects from [start] - [count] to [start]
+	 if [start] < 0: [start] is the [last] + [start]
+	 if [count] is null or 0: [count] is 1
+	 if [count] is negative: [count] is the last index - [count] 
+	 * */
+	function splice(start, count) {
+		if (cache.length == 0) { return false; }
+		
+		if (start < 0) {
+			start = cache.length + start;
+		}
+		
+		if (count == null || count == 0) {
+			count = 1;
+		} else if (count < 0) {
+			count = cache.length + count;
+		}
+		
+		for (var i = start + count - 1; i >= start; i--) {
+			destroyObject(cache[i]);
+		};
+		
+		cache.splice(start, count);
+		
+		return true;
+	}
+	
+	// delete all object
+	// same as splice(0, -1)
 	function reset() {
-		for (var i = 0, ii = cache.length; i < ii; i++){
+		if (cache.length == 0) { return false; }
+		
+		for (var i = cache.length - 1; i >= 0; i--) {
 		  	destroyObject(cache[i]);
 		};
+		
 		cache.length = 0;
+		
+		return true;
 	}
 	
 	function on(type, callback) {
@@ -138,13 +177,14 @@ function UIManager() {
 	  	} else {
 	  		events[type] = [callback];
 	  	}
+	  	
 	  	return this;
 	}
 	
 	function fireEvent(type, data) {
 	  	var callbacks = events[type];
 	  	if (callbacks) {
-	  		for(var i=0,ii=callbacks.length; i<ii; i++){
+	  		for (var i = 0, ii = callbacks.length; i < ii; i++) {
 				callbacks[i](data, { type: type });
 			};
 	  	}
@@ -154,10 +194,11 @@ function UIManager() {
 
 	return {
 		on: on,
-        get: get,
+        getCache: getCache,
         load: load,
         loadPrevious: loadPrevious,
         remove: remove,
+        splice: splice,
         reset: reset
     };
 };
