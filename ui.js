@@ -172,6 +172,8 @@ function UIManager() {
 		
 		cache.length = 0;
 		
+		Ti.API.info('UI Manager: Reset!');
+		
 		return true;
 	}
 	
@@ -181,7 +183,6 @@ function UIManager() {
 	  	} else {
 	  		events[type] = [callback];
 	  	}
-	  	
 	  	return this;
 	}
 	

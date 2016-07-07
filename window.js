@@ -144,7 +144,8 @@ function WindowManager() {
 		url: '',			// the url of the window
 		data: {},			// data for that window
 		reset: false,		// remove previous windows or not, default is false
-		animated: true
+		openAnimation: null // open animation
+		closeAnimation: null // close animation
 	 }
 	 * */
 	function load(params) {
@@ -168,7 +169,6 @@ function WindowManager() {
 
 	function reset() {
 	  	UICache.reset();
-	  	Ti.API.info('Window Manager: Reset!');
 	}
 
 	/*
@@ -179,7 +179,11 @@ function WindowManager() {
 	function loadPrevious(data, count, isReload) {
 		return UICache.loadPrevious(data, count, isReload);
 	}	
+	
 	function loadPreviousOrReset(data, count, isReload) {
+		// TODO: Deprecated
+	  	Ti.API.error('Window Manager: [loadPreviousOrReset] function is deprecated.\nPlease use [loadPrevious] or [reset] function instead.');
+		
 		if ( count >= getCache().length ) {
 			reset();
 		} else {

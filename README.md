@@ -31,6 +31,7 @@ Change log:
         remove == null: ignore
         remove == 1:    remove previous page
         remove == n:    remove n previous pages
+    - Deprecate [loadPreviousOrReset] function   
 
 ## Window Manager
 
