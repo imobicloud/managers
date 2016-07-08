@@ -92,8 +92,6 @@ function WindowManager() {
 				params.controller.doHide(params, win);
 			}
 		}
-		
-		Ti.API.info('Window Manager: Cached window: ' + getCache().length);
 	}
 	
 	function windowOpened(e) {
