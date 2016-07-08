@@ -57,7 +57,10 @@ function Plugins(config) {
 		  	}
 			
 			if (current && current._ai) {
-				current._ai.toggle(true, message, timeout);
+				current._ai.show({
+					message: message, 
+					timeout: timeout
+				});
 			}
 		} else {
 			var cache = Alloy.Globals.WinManager.getCache();
@@ -68,7 +71,7 @@ function Plugins(config) {
 		  	for(var i=0,ii=cache.length; i<ii; i++){
 			  	var current = cache[i];
 			  	if (current && current._ai) {
-					current._ai.toggle(false);
+					current._ai.hide();
 				}
 			};
 		}
