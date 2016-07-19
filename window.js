@@ -142,6 +142,7 @@ function WindowManager() {
 		url: '',			// the url of the window
 		data: {},			// data for that window
 		reset: false,		// remove previous windows or not, default is false
+		remove: n, 			// remove n previous page from stack
 		openAnimation: null // open animation
 		closeAnimation: null // close animation
 	 }

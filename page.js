@@ -10,8 +10,8 @@ function PageManager() {
 	/*
 	args = {
 		container: element,
-	 	defaultPage: '',
-	 	defaultPageData: null
+	 	url: '',
+	 	data: null
 	}	
 	 * */
 	function init(args) {
@@ -23,15 +23,16 @@ function PageManager() {
 			.on('ui:show', pageLoaded)
 			.on('ui:hide', pageDestroy);
 		
-		args.defaultPage && load({
-			url: args.defaultPage,
-			data: args.defaultPageData
+		args.url && load({
+			url: args.url,
+			data: args.data,
+			reset: true
 		});
 	  	
 	  	Ti.API.log('Page Manager: initialized');
 	}
 	
-	function pageLoaded(params, view) {
+	function pageLoaded(params, e) {
 		fireEvent('page:show', params);
 		
 		// make page visible
@@ -40,7 +41,7 @@ function PageManager() {
 		container.add(view);
 	}
 	
-	function pageDestroy(params, view) {
+	function pageDestroy(params, e) {
 		fireEvent('page:hide', params);
 		
 		// hide page
@@ -67,6 +68,7 @@ function PageManager() {
 	  - url: the url of the page
 	  - data: data for that page
 	  - reset: remove previous page or not, default is false
+	  - remove: remove n previous page from stack 
 	 * */
 	function load(params) {
 		UICache.load(params);
@@ -77,19 +79,20 @@ function PageManager() {
 	  - count: number of revious pages will be removed
 	  - data: new data for current page
 	 * */
-	function loadPrevious(data, count) {
-	  	UICache.loadPrevious(data, count);
-		
-		Ti.API.log('Page Manager: Cached page: ' + UICache.getCache().length);
+	function loadPrevious(data, count, isReload) {
+	  	UICache.loadPrevious(data, count, isReload);
 	};
 	
 	function getCache(index) {
 	  	return UICache.getCache(index); 
 	}
 	
+	function splice(start, count) {
+		UICache.splice(start, count);
+	}
+	
 	function reset() {
 		UICache.reset();
-	  	Ti.API.log('Page Manager: Reset! Cached page: ' + UICache.getCache().length);
 	}
 	
 	function on(type, callback) {

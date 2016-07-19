@@ -254,6 +254,11 @@ Change log:
 
 Change log: 
 
+  + 19 July, 2016:
+  	- Refactor [init] function
+  	  * replace defaultPage parameter with url
+  	  * replace defaultPageData parameter with data
+  	  
   + 7 July, 2016:
     - Refactor [load] function
       * Deprecate [isReset]
