@@ -27,7 +27,7 @@ function WindowManager() {
 		
 		/*
 		 NOTES:
-		 - To use managers with widget: nl.fokkezb.drawer / NappDrawer, view this demo
+		 - To use managers with module NappDrawer, view this demo
                 https://github.com/ptquang86/menu
          - To use managers with widgets that return a window
                 exports.getView = function() {
