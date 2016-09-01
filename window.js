@@ -101,7 +101,7 @@ function WindowManager() {
 	  	var init = cache.controller.init;
 	  	if (init) {
 	  		cache.controller.load = init;
-	  		Ti.API.error('Window Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+	  		Ti.API.error('Window Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 	  	}
 	  	
 	  	var load = cache.controller.load;
@@ -157,7 +157,7 @@ function WindowManager() {
 
 	function remove(start, end) {
 		// TODO: Deprecated
-		Ti.API.error('Window Manager: [remove] function is deprecated.\nPlease use [splice(start, count)] function instead.');
+		Ti.API.error('Window Manager: [remove] DEPRECATED in favor of [splice(start, count)]');
 	  	UICache.remove(start, end);
 	  	Ti.API.info('Window Manager: Remove from ' + start + ' to ' + end);
 	}
@@ -181,7 +181,7 @@ function WindowManager() {
 	
 	function loadPreviousOrReset(data, count, isReload) {
 		// TODO: Deprecated
-	  	Ti.API.error('Window Manager: [loadPreviousOrReset] function is deprecated.\nPlease use [loadPrevious] or [reset] function instead.');
+	  	Ti.API.error('Window Manager: [loadPreviousOrReset] DEPRECATED in favor of [loadPrevious] or [reset]');
 		
 		if ( count >= getCache().length ) {
 			reset();

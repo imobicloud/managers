@@ -105,7 +105,7 @@ function TabbarManager() {
 		  	var init = params.controller.init;
 		  	if (init) {
 		  		params.controller.load = init;
-		  		Ti.API.error('Tabbar Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+		  		Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 		  	}
 			
 			var load = params.controller.load;
@@ -181,7 +181,7 @@ function TabbarManager() {
 			  	var init = current.controller.init;
 			  	if (init) {
 			  		current.controller.load = init;
-			  		Ti.API.error('Tabbar Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+			  		Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 			  	}
 				
 				var load = current.controller.load;

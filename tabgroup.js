@@ -154,7 +154,7 @@ function TabGroupManager() {
 	  	var init = cache.controller.init;
 	  	if (init) {
 	  		cache.controller.load = init;
-	  		Ti.API.error('Tabgroup Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+	  		Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 	  	}
 		
 		var load = cache.controller.load;	
@@ -236,7 +236,7 @@ function TabGroupManager() {
 		  	var init = current.controller.init;
 		  	if (init) {
 		  		current.controller.load = init;
-		  		Ti.API.error('Tabgroup Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+		  		Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 		  	}
 			
 			var load = current.controller.load;

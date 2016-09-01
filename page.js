@@ -56,7 +56,7 @@ function PageManager() {
 	  	var init = cache.controller.init;
 	  	if (init) {
 	  		cache.controller.load = init;
-	  		Ti.API.error('Page Manager: [exports.init] callback is deprecated.\nPlease use [exports.load] callback instead.');
+	  		Ti.API.error('Page Manager: [exports.init] DEPRECATED in favor of [exports.load].');
 	  	}
 	  	
 	  	var load = cache.controller.load;

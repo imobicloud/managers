@@ -45,7 +45,7 @@ function UIManager() {
 		// TODO: Deprecated
 		if (params.isReset != null) {
 			params.reset = params.isReset;
-			Ti.API.error('UI Manager: [isReset] parameter is deprecated.\nPlease use [reset] parameter instead.');
+			Ti.API.error('UI Manager: [isReset] parameter DEPRECATED in favor of [reset]');
 		}
 		
 		// delete previous
@@ -118,7 +118,7 @@ function UIManager() {
 	 * */
 	function remove(start, end) {
 		// TODO: Deprecated
-		Ti.API.error('UIManager: [remove] function is deprecated.\nPlease use [splice(start, count)] function instead.');
+		Ti.API.error('UIManager: [remove] DEPRECATED in favor of [splice(start, count)]');
 		
 		if (start == null) {
 			start = cache.length - 1;
