@@ -52,24 +52,24 @@ nav = {
 
 icon size: 
 	- ios:
-		navbar
-		+ 3x: 66
-		+ 2x: 44
-		+ 1x: 22 
+		navbar: 
+			3x: 66
+			2x: 44
+			1x: 22
 		tabbar: 
-		+ 3x: 90
-		+ 2x: 60
-		+ 1x: 30 
+			3x: 90
+			2x: 60
+			1x: 30
 	- android 
-		[Optical square] area in [Full asset]
-		24 × 24 		 area in 32 × 32 (mdpi)
-		36 × 36 		 area in 48 × 48 (hdpi)
-		48 × 48 		 area in 64 × 64 (xhdpi)
-		72 × 72 		 area in 96 × 96 (xxhdpi)
-		96 × 96 		 area in 128 × 128 (xxxhdpi)
-		
+		navbar + tabbar: Optical square(Full asset)
+			xxxhdpi: 96(128)
+			xxhdpi: 72(96)
+			xhdpi: 48(64)
+			hdpi: 36(48)
+			mdpi: 24(32)
 	ldpi | mdpi | hdpi | xhdpi | xxhdpi | xxxhdpi
-	0.75 | 1    | 1.5  | 2     | 3      | 4	
+	0.75 | 1x   | 1.5  | 2x    | 3x     | 4x
 * */
+
 exports.load = navigation.load;
 exports.update = navigation.load;
