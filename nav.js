@@ -52,9 +52,14 @@ nav = {
 
 icon size: 
 	- ios:
+		navbar
 		+ 3x: 66
 		+ 2x: 44
 		+ 1x: 22 
+		tabbar: 
+		+ 3x: 90
+		+ 2x: 60
+		+ 1x: 30 
 	- android 
 		[Optical square] area in [Full asset]
 		24 × 24 		 area in 32 × 32 (mdpi)
