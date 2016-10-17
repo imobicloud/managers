@@ -11,7 +11,7 @@ function TabbarManager() {
 
 	/*
 	 args = {
-		 container: Ti.UI.View
+		 container: Ti.UI.View,
 		 tabs: [{
 			 url: '',
 			 data: null

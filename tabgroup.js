@@ -11,7 +11,7 @@ function TabGroupManager() {
 
 	/*
 	 args = {
-		 tabgroup: Ti.UI.TabGroup
+		 tabgroup: Ti.UI.TabGroup,
 		 tabs: [{
 			 icon: '',
 			 title: '',
