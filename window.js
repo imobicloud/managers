@@ -3,28 +3,28 @@
 function WindowManager() {
 	var UICache,
 		events = {};
-	
+
 	init();
-		
+
 	// PRIVATE FUNCTIONS ========================================================
-	
+
 	function init() {
 		var UIManager = require('managers/ui');
 		UICache = new UIManager();
 		UICache
 			.on('ui:show', winLoaded)
 			.on('ui:hide', winDestroy);
-		
+
 		//
-		
+
 		Ti.API.info('Window Manager: initialized');
 	}
 
 	function winLoaded(params, e) {
 		fireEvent('window:show', params);
-		
+
 		var win = params.controller.getView();
-		
+
 		/*
 		 NOTES:
 		 - To use managers with module NappDrawer, view this demo
@@ -34,16 +34,16 @@ function WindowManager() {
                     return $.widgetName.windowId;
                 };
 		 * */
-		
+
 		win.addEventListener('open', windowOpened);
-		
+
 		// cleanup cache, in case of window is closed not by Window Manager
 		win.addEventListener('close', windowClosed);
-		
+
 		if (win.apiName == 'Ti.UI.iOS.NavigationWindow') {
 			params.navigationWindow = win;
 		}
-		
+
 		// make window visible
 		if (params.controller.doShow == null) {
 			if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Ti.UI.iOS.NavigationWindow') {
@@ -63,19 +63,19 @@ function WindowManager() {
 		} else {
 			params.controller.doShow(params, win);
 		}
-		
+
 		// handle back event
-		OS_ANDROID && win.addEventListener('androidback', androidback);
+		OS_ANDROID && (win.onBack = androidback);
 	}
-	
+
 	function winDestroy(params, e) {
 		if (params._alreadyClosed !== true) {
 			fireEvent('window:hide', params);
-			
+
 			var win = params.controller.getView();
-			
+
 			win.removeEventListener('close', windowClosed);
-			
+
 			if (params.controller.doHide == null) {
 				if (OS_IOS && win.apiName != 'Ti.UI.TabGroup' && win.apiName != 'Ti.UI.iOS.NavigationWindow') {
 					if (params.navigationWindow) {
@@ -93,34 +93,34 @@ function WindowManager() {
 			}
 		}
 	}
-	
+
 	function windowOpened(e) {
 	  	var cache = getCache(-1);
-	  	
+
 	  	// TODO: Deprecated
 	  	var init = cache.controller.init;
 	  	if (init) {
 	  		cache.controller.load = init;
 	  		Ti.API.error('Window Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 	  	}
-	  	
+
 	  	var load = cache.controller.load;
-	  	load && load(cache);  
+	  	load && load(cache);
 	}
-	
+
 	function windowClosed(e) {
 	  	var cache = getCache(-1),
 	  		iosback = cache.controller.iosback;
 	  	cache._alreadyClosed = true;
 	  	loadPrevious(OS_IOS && iosback ? iosback() : null);
 	}
-	
+
 	function createNavigationWindow(params, win) {
 	  	var navigationWindow = Ti.UI.iOS.createNavigationWindow({ window: win });
 		params.navigationWindow = navigationWindow;
 		navigationWindow.open(params.openAnimation);
 	}
-	
+
 	function getNavigationWindow() {
 	  	var cache = getCache(),
 	  		navigationWindow;
@@ -136,7 +136,7 @@ function WindowManager() {
 		};
 		return navigationWindow;
 	}
-	
+
 	/*
 	 params ={
 		url: '',			// the url of the window
@@ -150,7 +150,7 @@ function WindowManager() {
 	function load(params) {
 		UICache.load(params);
 	};
-	
+
 	function getCache(index) {
 		return UICache.getCache(index);
 	}
@@ -161,7 +161,7 @@ function WindowManager() {
 	  	UICache.remove(start, end);
 	  	Ti.API.info('Window Manager: Remove from ' + start + ' to ' + end);
 	}
-	
+
 	function splice(start, count) {
 		UICache.splice(start, count);
 	}
@@ -177,16 +177,16 @@ function WindowManager() {
 	 * */
 	function loadPrevious(data, count, isReload) {
 		return UICache.loadPrevious(data, count, isReload);
-	}	
-	
+	}
+
 	function loadPreviousOrReset(data, count, isReload) {
 		// TODO: Deprecated
 	  	Ti.API.error('Window Manager: [loadPreviousOrReset] DEPRECATED in favor of [loadPrevious] or [reset]');
-		
+
 		if ( count >= getCache().length ) {
 			reset();
 		} else {
-			loadPrevious(data, count, isReload) || reset();	
+			loadPrevious(data, count, isReload) || reset();
 		}
 	}
 
@@ -204,20 +204,20 @@ function WindowManager() {
 
 		Ti.API.info('Window Manager: Exit!');
 	}
-	
+
 	function androidback(e) {
 		var controller = getCache(-1).controller;
 		if (controller.androidback && controller.androidback() === false) {
 			return;
 		}
-	
+
 		if (getCache().length > 1) {
 			loadPrevious();
 		} else {
 			fireEvent('window:exit');
 		}
 	}
-	
+
 	function on(type, callback) {
 	  	if (events[type]) {
 	  		events[type].push(callback);
@@ -226,7 +226,7 @@ function WindowManager() {
 	  	}
 	  	return this;
 	}
-	
+
 	function fireEvent(type, data) {
 	  	var callbacks = events[type];
 	  	if (callbacks) {
@@ -235,9 +235,9 @@ function WindowManager() {
 			};
 	  	}
 	}
-	
+
 	// PUBLIC FUNCTIONS ========================================================
-	
+
 	return {
 		on: on,
 		load: load,
