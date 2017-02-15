@@ -65,7 +65,13 @@ function WindowManager() {
 		}
 
 		// handle back event
-		OS_ANDROID && (win.onBack = androidback);
+		if (OS_ANDROID) {
+			if (parseInt(Titanium.version, 10) >= 6) {
+				win.onBack = androidback;
+			} else {
+				win.addEventListener('androidback', androidback);
+			}
+		}
 	}
 
 	function winDestroy(params, e) {
