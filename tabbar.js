@@ -6,7 +6,7 @@ function TabbarManager() {
 		events = {},
 		// isFirstLoad = true,
 		UICaches = [];
-	
+
 	// PRIVATE FUNCTIONS ========================================================
 
 	/*
@@ -21,7 +21,7 @@ function TabbarManager() {
 	 * */
 	function init(args) {
 		container = args.container;
-		
+
 		// render tabs
 
 		var UIManager = require('managers/ui'),
@@ -29,50 +29,50 @@ function TabbarManager() {
 
 		for (var i = 0, ii = arrayTab.length; i < ii; i++) {
 			container.add( Ti.UI.createView({ visible: false }) );
-			
+
 			//
-			
+
 			var tab = arrayTab[i],
 				UICache = new UIManager();
-				
+
 			UICache
 				.on('ui:show', pageLoaded)
 				.on('ui:hide', pageDestroy);
-					
+
 			UICache.load({
 				tabIndex: i,
 				url: tab.url,
 				data: tab.data
-			});	
-			
+			});
+
 			UICaches.push(UICache);
 		};
 
 		setActiveTab(args.defaultTab || 0, true, true);
-		
+
 		//
-		
+
 		Ti.API.log('Tabbar Manager: Initialize!');
 	};
-	
+
 	function pageLoaded(params, e) {
 		fireEvent('page:show', params);
-		
+
 		var vTab = container.children[params.tabIndex],
 			length = vTab.children.length;
 		length && (vTab.children[ length - 1 ].visible = false);
 		vTab.add( params.controller.getView() );
 	}
-	
+
 	function pageDestroy(params, e) {
 		fireEvent('page:hide', params);
-		
+
 		var vTab = container.children[params.tabIndex],
 			length = vTab.children.length;
 		length > 1 && (vTab.children[ length - 2 ].visible = true);
 		vTab.remove( params.controller.getView() );
 	}
-	
+
 	/*
 	 params = {
 		url: url,			// the url of the page
@@ -85,32 +85,32 @@ function TabbarManager() {
 		Ti.API.log('Tabbar Manager: load Tab ' + params.tabIndex + ' - Page ' + params.url + ': ' + JSON.stringify(params.data));
 
 		var tabIndex = params.tabIndex;
-		
+
 		// focus tab
 		if (tabIndex != activeTab) {
 			setActiveTab(tabIndex, false, false);
 		}
 
-		fireEvent('page:focus', { url: params.url });
-
 		if (params.url) {
 			// does not allow remove root window
 			params.reset = false;
-			
+
 			UICaches[tabIndex].load(params);
-			
+
 			params._alreadyLoad = true;
-			
+
 			// TODO: Deprecated
 		  	var init = params.controller.init;
 		  	if (init) {
 		  		params.controller.load = init;
 		  		Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 		  	}
-			
+
 			var load = params.controller.load;
 		  	load && load(params);
-		  	
+
+			fireEvent('page:focus', params);
+
 		} else if (params.reset) {
 			var len = getCache(activeTab).length;
 			if (len > 1) {
@@ -121,10 +121,10 @@ function TabbarManager() {
 				current.controller.getView().visible = true;
 			}
 		}
-		
+
 		Ti.API.log('Tabbar Manager: Tab ' + tabIndex + ' - Cached ' + getCache(tabIndex).length);
 	}
-	
+
 	/*
 	 params:
 	 - count: number of revious pages will be removed
@@ -132,10 +132,10 @@ function TabbarManager() {
 	 * */
 	function loadPrevious(data, count, isReload) {
 		var cache = getCache(activeTab, -(count || 1) - 1);
-		fireEvent('page:focus', { url: cache ? cache.url : '' });
-		
+		fireEvent('page:focus', cache);
+
 		UICaches[activeTab].loadPrevious(data, count, isReload);
-		
+
 		Ti.API.log('Tabbar Manager: Tab ' + activeTab + ' - Cached ' + getCache(activeTab).length);
 	};
 
@@ -156,69 +156,69 @@ function TabbarManager() {
 			prev.controller.getView().visible = false;
 			container.children[activeTab].visible = false;
 		}
-		
+
 		var current = getCache(tabIndex, -1);
-		
+
 		if (willShowUp !== false) {
-			fireEvent('page:focus', { url: current.url });
+			fireEvent('page:focus', current);
 		}
-		
+
 		activeTab = tabIndex;
-		
+
 		container.children[tabIndex].visible = true;
-		
+
 		if (willReload !== false) {
 			// reload current tab
 			if (current._alreadyLoad) {
 				current.controller.reload();
 				current.controller.getView().visible = true;
-			} 
+			}
 			// or load
 			else {
 				current._alreadyLoad = true;
-				
+
 				// TODO: Deprecated
 			  	var init = current.controller.init;
 			  	if (init) {
 			  		current.controller.load = init;
 			  		Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 			  	}
-				
+
 				var load = current.controller.load;
 				load && load(current);
 			}
 		} else if (willShowUp !== false) {
 			current.controller.getView().visible = true;
 		}
-		
+
 		Ti.API.log('Tabbar Manager: Tab ' + tabIndex + ' focussed! ');
 	}
-	
+
 	function checkReady(callback) {
 	  	if (container) {
 	  		callback();
 	  	}
 	}
-	
+
 	function exit() {
 		checkReady(function(){
-			
+
 			var children = container.children;
 			for (var i = UICaches.length - 1; i >= 0; i--) {
 				UICaches[i].reset();
 				container.remove(children[i]);
 			};
-			
+
 			activeTab = null;
 			container = null;
 			events = null;
 			UICaches = null;
-			
+
 			Ti.API.log('Tabbar Manager: Exit!');
-			
+
 		});
 	};
-	
+
 	function on(type, callback) {
 	  	if (events[type]) {
 	  		events[type].push(callback);
@@ -227,7 +227,7 @@ function TabbarManager() {
 	  	}
 	  	return this;
 	}
-	
+
 	function fireEvent(type, data) {
 	  	var callbacks = events[type];
 	  	if (callbacks) {
@@ -236,11 +236,11 @@ function TabbarManager() {
 			};
 	  	}
 	}
-	
+
 	function getView() {
 	  	return container;
 	}
-	
+
 	// PUBLIC FUNCTIONS ========================================================
 
 	return {
