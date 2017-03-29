@@ -139,7 +139,8 @@ function TabGroupManager() {
 			if (len > 1) {
 				loadPrevious(params.data, len - 1);
 			} else {
-				getCache(activeTab, -1).controller.reload(params.data);
+				var cache = getCache(activeTab, -1);
+				loadOrReloadTab(cache, params.data);
 			}
 		}
 		
@@ -148,17 +149,7 @@ function TabGroupManager() {
 	
 	function windowOpened(e) {
 	  	var cache = getCache(activeTab, -1);
-		cache._alreadyLoad = true;
-		
-		// TODO: Deprecated
-	  	var init = cache.controller.init;
-	  	if (init) {
-	  		cache.controller.load = init;
-	  		Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
-	  	}
-		
-		var load = cache.controller.load;	
-	  	load && load(cache);
+		loadOrReloadTab(cache);
 	}
 	
 	function windowClosed(e) {
@@ -174,6 +165,12 @@ function TabGroupManager() {
 	 - data: new data for current page, the reload function of current tab will be called
 	 * */
 	function loadPrevious(data, count, isReload) {
+		var cache = getCache(activeTab, -1);
+		if (cache._alreadyLoad !== true) {
+			loadOrReloadTab(cache, data);
+			isReload = false;
+		}
+		
 		UICaches[activeTab].loadPrevious(data, count, isReload);
 		
 		Ti.API.log('Tabgroup Manager: Tab ' + activeTab + ' - Cached ' + getCache(activeTab).length);
@@ -210,6 +207,27 @@ function TabGroupManager() {
 		Ti.API.log('Tabgroup Manager: Exit!');
 	};
 	
+	function loadOrReloadTab(cache, data) {
+		if (cache == null) { return; }
+		
+		if (cache._alreadyLoad) {
+			// reload current tab
+			cache.controller.reload(data);
+		} else {
+			cache._alreadyLoad = true;
+			
+			// TODO: Deprecated
+		  	var init = cache.controller.init;
+		  	if (init) {
+		  		cache.controller.load = init;
+		  		Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
+		  	}
+			
+			var load = cache.controller.load;
+			load && load(cache, data);
+		}
+	}
+	
 	function tabGroupFocus(e) {
 		if (OS_ANDROID && e.tab == null) { return; }                     // this is required when tab has text-field
 		// if (OS_ANDROID && isFirstLoad) { isFirstLoad = false; return; }  // this event also fires when the activity enters the foreground
@@ -226,22 +244,7 @@ function TabGroupManager() {
 		}
 		
 		var current = getCache(tabIndex, -1);
-		if (current._alreadyLoad) {
-			// reload current tab
-			current.controller.reload();
-		} else {
-			current._alreadyLoad = true;
-			
-			// TODO: Deprecated
-		  	var init = current.controller.init;
-		  	if (init) {
-		  		current.controller.load = init;
-		  		Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
-		  	}
-			
-			var load = current.controller.load;
-			load && load(current);
-		}
+		loadOrReloadTab(current);
 		
 		fireEvent('tabgroup:focus', { cache: current });
 		

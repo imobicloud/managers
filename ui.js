@@ -60,8 +60,13 @@ function UIManager() {
 		Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
 	};
 	
-	function destroyObject(params) {
+	function destroyObject(params, cancelAnimation) {
 		if (params == null) { return; }
+		
+		if (cancelAnimation) {
+			if (params.closeAnimation == null) { params.closeAnimation = {}; }
+			params.closeAnimation.animated = false;
+		}
 		
 		var controller = params.controller;
 		params._alreadyCleanup !== true && controller.cleanup(true);
@@ -126,8 +131,8 @@ function UIManager() {
 			start = cache.length + start;
 		}
 		
-		for (var i = end; i <= start; i++){
-			destroyObject(cache[i]);
+		for (var i = end, cancelAnimation = start - i > 1; i <= start; i++){
+			destroyObject(cache[i], cancelAnimation);
 		};
 		
 		cache.splice(end, start - end + 1);
@@ -152,8 +157,8 @@ function UIManager() {
 			count = cache.length + count;
 		}
 		
-		for (var i = start + count - 1; i >= start; i--) {
-			destroyObject(cache[i]);
+		for (var i = start + count - 1, cancelAnimation = i - start > 1; i >= start; i--) {
+			destroyObject(cache[i], cancelAnimation);
 		};
 		
 		cache.splice(start, count);
@@ -166,8 +171,8 @@ function UIManager() {
 	function reset() {
 		if (cache.length == 0) { return false; }
 		
-		for (var i = cache.length - 1; i >= 0; i--) {
-		  	destroyObject(cache[i]);
+		for (var i = cache.length - 1, cancelAnimation = i > 1; i >= 0; i--) {
+		  	destroyObject(cache[i], cancelAnimation);
 		};
 		
 		cache.length = 0;

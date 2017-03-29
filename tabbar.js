@@ -97,17 +97,7 @@ function TabbarManager() {
 
 			UICaches[tabIndex].load(params);
 
-			params._alreadyLoad = true;
-
-			// TODO: Deprecated
-		  	var init = params.controller.init;
-		  	if (init) {
-		  		params.controller.load = init;
-		  		Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
-		  	}
-
-			var load = params.controller.load;
-		  	load && load(params);
+			loadOrReloadTab(params);
 
 			fireEvent('page:focus', params);
 
@@ -117,7 +107,7 @@ function TabbarManager() {
 				loadPrevious(params.data, len - 1);
 			} else {
 				var current = getCache(activeTab, -1);
-				current.controller.reload(params.data);
+				loadOrReloadTab(current, params.data);
 				current.controller.getView().visible = true;
 			}
 		}
@@ -132,6 +122,12 @@ function TabbarManager() {
 	 * */
 	function loadPrevious(data, count, isReload) {
 		var cache = getCache(activeTab, -(count || 1) - 1);
+		
+		if (cache._alreadyLoad !== true) {
+			loadOrReloadTab(cache, data);
+			isReload = false;
+		}
+		
 		fireEvent('page:focus', cache);
 
 		UICaches[activeTab].loadPrevious(data, count, isReload);
@@ -148,11 +144,39 @@ function TabbarManager() {
 		return activeTab;
 	};
 
+	function loadOrReloadTab(cache, data) {
+		if (cache == null) { return; }
+		
+		// reload current tab
+		if (cache._alreadyLoad) {
+			cache.controller.reload(data);
+		}
+		// or load
+		else {
+			cache._alreadyLoad = true;
+
+			// TODO: Deprecated
+			var init = cache.controller.init;
+			if (init) {
+				cache.controller.load = init;
+				Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
+			}
+
+			var load = cache.controller.load;
+			load && load(cache, data);
+		}
+	}
+
 	function setActiveTab(tabIndex, willReload, willShowUp) {
 		// cleanup previous tab
 		if (activeTab != null) {
 			var prev = getCache(activeTab, -1);
-			prev.controller.cleanup();
+			
+			Ti.API.error("Quang: prev " + JSON.stringify( prev.url ));
+			
+			if (prev._alreadyLoad) {
+				prev.controller.cleanup();
+			}
 			prev.controller.getView().visible = false;
 			container.children[activeTab].visible = false;
 		}
@@ -168,26 +192,10 @@ function TabbarManager() {
 		container.children[tabIndex].visible = true;
 
 		if (willReload !== false) {
-			// reload current tab
-			if (current._alreadyLoad) {
-				current.controller.reload();
-				current.controller.getView().visible = true;
-			}
-			// or load
-			else {
-				current._alreadyLoad = true;
-
-				// TODO: Deprecated
-			  	var init = current.controller.init;
-			  	if (init) {
-			  		current.controller.load = init;
-			  		Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
-			  	}
-
-				var load = current.controller.load;
-				load && load(current);
-			}
-		} else if (willShowUp !== false) {
+			loadOrReloadTab(current);
+		} 
+		
+		if (willShowUp !== false) {
 			current.controller.getView().visible = true;
 		}
 
