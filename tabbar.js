@@ -171,9 +171,6 @@ function TabbarManager() {
 		// cleanup previous tab
 		if (activeTab != null) {
 			var prev = getCache(activeTab, -1);
-			
-			Ti.API.error("Quang: prev " + JSON.stringify( prev.url ));
-			
 			if (prev._alreadyLoad) {
 				prev.controller.cleanup();
 			}
