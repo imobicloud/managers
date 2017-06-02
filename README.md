@@ -11,6 +11,9 @@ plugins.js contains useful plugins for window and tabgroup
 
 Change log: 
 
+  + 2 June, 2017:
+    - Add DEBUG flag
+
   + 7 July, 2016:
     - Deprecate [get] function
     - Add [getCache] function to replace [get] function. Parameter:
@@ -43,7 +46,7 @@ index.js
 
 	// init win manager
 	var oWindowManager = require('managers/window'),
-		winManager = new oWindowManager();
+		winManager = new oWindowManager({ DEBUG: true });
 
 	// open a window
 	winManager.load({
@@ -86,7 +89,7 @@ index.js
 
 	// init win manager
 	var oWindowManager = require('managers/window'),
-		winManager = new oWindowManager();	
+		winManager = new oWindowManager({ DEBUG: true });	
 
 	winManager.on('window:show', windowOpen);
 	winManager.on('window:hide', windowClose);
@@ -97,6 +100,9 @@ index.js
 
 Change log: 
 
+  + 2 June, 2017:
+    - Add DEBUG flag
+    
   + 7 July, 2016:
 	- Deprecate [remove] function
     - Add [splice] function to replace [remove] function. Parameters:
@@ -124,7 +130,7 @@ UI element: AI is required.
 	var oPlugins = require('managers/plugins'),
 		plugins  = new oPlugins('window', { ai: true, keyboard: true }),
 		oWindowManager = require('managers/window'),
-		winManager = new oWindowManager( plugins.windowChanged );
+		winManager = new oWindowManager({ DEBUG: true });
 
 NOTE: 
 	if window has a webview, and keyboard is true, the webview is freezed. 
@@ -153,21 +159,23 @@ js
 
 	// init tabgroup manager
 	var oTabGroupManager = require('managers/tabgroup'),
-		tabGroup = new oTabGroupManager({
-			tabgroup: $.tabgroup,
-			tabs: [
-				{
-					title: 'Tab 1',
-					icon: '/images/tabs/icon-1.png',
-					url: 'path_to_tab_1'
-				},
-				{
-					title: 'Tab 2',
-					icon: '/images/tabs/icon-2.png',
-					url: 'path_to_tab_2'
-				}
-			]
-		});
+		tabGroup = new oTabGroupManager({ DEBUG: true });
+
+    tabGroup.init({
+        tabgroup: $.tabgroup,
+        tabs: [
+            {
+                title: 'Tab 1',
+                icon: '/images/tabs/icon-1.png',
+                url: 'path_to_tab_1'
+            },
+            {
+                title: 'Tab 2',
+                icon: '/images/tabs/icon-2.png',
+                url: 'path_to_tab_2'
+            }
+        ]
+    });
 
 	// open a child window in Tab 2
 	tabGroup.load({
@@ -236,6 +244,9 @@ Default plugins are: Activity Indicator, a hidden textfield for auto hide keyboa
 
 Change log: 
 
+  + 2 June, 2017:
+    - Add DEBUG flag
+    
   + 7 July, 2016:
     - Refactor [load] function
       * Deprecate [isReset]
@@ -254,6 +265,9 @@ Change log:
 
 Change log: 
 
+  + 2 June, 2017:
+    - Add DEBUG flag
+    
   + 19 July, 2016:
   	- Refactor [init] function
   	  * replace defaultPage parameter with url
