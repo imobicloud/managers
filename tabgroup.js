@@ -1,6 +1,13 @@
 // var Alloy = require('alloy');
 
-function TabGroupManager() {
+/*
+_args = {
+	DEBUG: false
+}
+*/
+function TabGroupManager(_args) {
+	if (_args == null) { _args = {}; }
+	
 	var activeTab,
 		events = {},
 		// isFirstLoad = true,
@@ -35,7 +42,7 @@ function TabGroupManager() {
 
 		for (var i = 0, ii = arrayTab.length; i < ii; i++) {
 			var tab = arrayTab[i],
-				UICache = new UIManager();
+				UICache = new UIManager(_args);
 				
 			UICache
 				.on('ui:show', winLoaded)
@@ -220,7 +227,7 @@ function TabGroupManager() {
 		  	var init = cache.controller.init;
 		  	if (init) {
 		  		cache.controller.load = init;
-		  		Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
+		  		_args.DEBUG && Ti.API.error('Tabgroup Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 		  	}
 			
 			var load = cache.controller.load;

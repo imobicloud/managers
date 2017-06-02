@@ -1,6 +1,13 @@
 var Alloy = require('alloy');
 
-function PageManager() {
+/*
+_args = {
+	DEBUG: false
+}
+*/
+function PageManager(_args) {
+	if (_args == null) { _args = {}; }
+	
 	var UICache,
 		container,
 		events = {};
@@ -18,7 +25,7 @@ function PageManager() {
 	  	container = args.container;
 	  	
 	  	var UIManager = require('managers/ui');
-		UICache = new UIManager();
+		UICache = new UIManager(_args);
 		UICache
 			.on('ui:show', pageLoaded)
 			.on('ui:hide', pageDestroy);
@@ -56,7 +63,7 @@ function PageManager() {
 	  	var init = cache.controller.init;
 	  	if (init) {
 	  		cache.controller.load = init;
-	  		Ti.API.error('Page Manager: [exports.init] DEPRECATED in favor of [exports.load].');
+	  		_args.DEBUG && Ti.API.error('Page Manager: [exports.init] DEPRECATED in favor of [exports.load].');
 	  	}
 	  	
 	  	var load = cache.controller.load;

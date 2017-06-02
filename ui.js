@@ -1,6 +1,13 @@
 var Alloy = require('alloy');
 
-function UIManager() {
+/*
+_args = {
+	DEBUG: false
+}
+*/
+function UIManager(_args) {
+	if (_args == null) { _args = {}; }
+	
 	var cache = [],
 		events = {};
 	
@@ -16,7 +23,7 @@ function UIManager() {
 	  - remove: null or 1, 2, ...: delete 1, 2, ... previous objects
 	 * */
 	function load(params) {
-		Ti.API.info('UI Manager: Load ' + params.url + ': ' + JSON.stringify(params.data));
+		_args.DEBUG && Ti.API.info('UI Manager: Load ' + params.url + ': ' + JSON.stringify(params.data));
 		
 		var hasPrevious = cache.length > 0;
 		
@@ -45,7 +52,7 @@ function UIManager() {
 		// TODO: Deprecated
 		if (params.isReset != null) {
 			params.reset = params.isReset;
-			Ti.API.error('UI Manager: [isReset] parameter DEPRECATED in favor of [reset]');
+			_args.DEBUG && Ti.API.error('UI Manager: [isReset] parameter DEPRECATED in favor of [reset]');
 		}
 		
 		// delete previous
@@ -57,7 +64,7 @@ function UIManager() {
 			}
 		}
 		
-		Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
+		_args.DEBUG && Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
 	};
 	
 	function destroyObject(params, cancelAnimation) {
@@ -81,7 +88,7 @@ function UIManager() {
 	  - count: number of previous object will be deleted
 	 * */
 	function loadPrevious(data, count, isReload) {
-		Ti.API.info('UI Manager: loadPrevious ' + JSON.stringify( data ));
+		_args.DEBUG && Ti.API.info('UI Manager: loadPrevious ' + JSON.stringify( data ));
 		
 		if (cache.length < 2) { return false; }
 		
@@ -97,7 +104,7 @@ function UIManager() {
 			prev._alreadyCleanup = false;
 		}
 		
-		Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
+		_args.DEBUG && Ti.API.info('UI Manager: Cached ' + JSON.stringify( cache.length ));
 		
 		return true;
 	};
@@ -123,7 +130,7 @@ function UIManager() {
 	 * */
 	function remove(start, end) {
 		// TODO: Deprecated
-		Ti.API.error('UIManager: [remove] DEPRECATED in favor of [splice(start, count)]');
+		_args.DEBUG && Ti.API.error('UIManager: [remove] DEPRECATED in favor of [splice(start, count)]');
 		
 		if (start == null) {
 			start = cache.length - 1;
@@ -177,7 +184,7 @@ function UIManager() {
 		
 		cache.length = 0;
 		
-		Ti.API.info('UI Manager: Reset!');
+		_args.DEBUG && Ti.API.info('UI Manager: Reset!');
 		
 		return true;
 	}

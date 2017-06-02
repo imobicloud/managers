@@ -1,6 +1,13 @@
 // var Alloy = require('alloy');
 
-function WindowManager() {
+/*
+_args = {
+	DEBUG: false
+}
+*/
+function WindowManager(_args) {
+	if (_args == null) { _args = {}; }
+	
 	var UICache,
 		events = {};
 
@@ -10,14 +17,14 @@ function WindowManager() {
 
 	function init() {
 		var UIManager = require('managers/ui');
-		UICache = new UIManager();
+		UICache = new UIManager(_args);
 		UICache
 			.on('ui:show', winLoaded)
 			.on('ui:hide', winDestroy);
 
 		//
 
-		Ti.API.info('Window Manager: initialized');
+		_args.DEBUG && Ti.API.info('Window Manager: initialized');
 	}
 
 	function winLoaded(params, e) {
@@ -107,7 +114,7 @@ function WindowManager() {
 	  	var init = cache.controller.init;
 	  	if (init) {
 	  		cache.controller.load = init;
-	  		Ti.API.error('Window Manager: [exports.init] DEPRECATED in favor of [exports.load]');
+	  		_args.DEBUG && Ti.API.error('Window Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 	  	}
 
 	  	var load = cache.controller.load;
@@ -163,9 +170,9 @@ function WindowManager() {
 
 	function remove(start, end) {
 		// TODO: Deprecated
-		Ti.API.error('Window Manager: [remove] DEPRECATED in favor of [splice(start, count)]');
+		_args.DEBUG && Ti.API.error('Window Manager: [remove] DEPRECATED in favor of [splice(start, count)]');
 	  	UICache.remove(start, end);
-	  	Ti.API.info('Window Manager: Remove from ' + start + ' to ' + end);
+	  	_args.DEBUG && Ti.API.info('Window Manager: Remove from ' + start + ' to ' + end);
 	}
 
 	function splice(start, count) {
@@ -187,7 +194,7 @@ function WindowManager() {
 
 	function loadPreviousOrReset(data, count, isReload) {
 		// TODO: Deprecated
-	  	Ti.API.error('Window Manager: [loadPreviousOrReset] DEPRECATED in favor of [loadPrevious] or [reset]');
+	  	_args.DEBUG && Ti.API.error('Window Manager: [loadPreviousOrReset] DEPRECATED in favor of [loadPrevious] or [reset]');
 
 		if ( count >= getCache().length ) {
 			reset();
@@ -208,7 +215,7 @@ function WindowManager() {
 			activity && activity.finish();
 		}
 
-		Ti.API.info('Window Manager: Exit!');
+		_args.DEBUG && Ti.API.info('Window Manager: Exit!');
 	}
 
 	function androidback(e) {

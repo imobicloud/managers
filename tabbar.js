@@ -1,6 +1,13 @@
 // var Alloy = require('alloy');
 
-function TabbarManager() {
+/*
+_args = {
+	DEBUG: false
+}
+*/
+function TabbarManager(_args) {
+	if (_args == null) { _args = {}; }
+	
 	var activeTab,
 		container,
 		events = {},
@@ -33,7 +40,7 @@ function TabbarManager() {
 			//
 
 			var tab = arrayTab[i],
-				UICache = new UIManager();
+				UICache = new UIManager(_args);
 
 			UICache
 				.on('ui:show', pageLoaded)
@@ -159,7 +166,7 @@ function TabbarManager() {
 			var init = cache.controller.init;
 			if (init) {
 				cache.controller.load = init;
-				Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
+				_args.DEBUG && Ti.API.error('Tabbar Manager: [exports.init] DEPRECATED in favor of [exports.load]');
 			}
 
 			var load = cache.controller.load;
