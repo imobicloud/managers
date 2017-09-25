@@ -42,8 +42,12 @@ function updateActionBar(actionBar) {
 
 	if (nav.homeAction) {
 		actionBar.onHomeIconItemSelected = nav.homeAction;
-	} else if (nav.backAction) {
-		actionBar.displayHomeAsUp = true;
-		actionBar.onHomeIconItemSelected = nav.backAction;
+	} else if (typeof nav.backAction !== 'undefined') {
+		if (nav.backAction) {
+			actionBar.displayHomeAsUp = true;
+			actionBar.onHomeIconItemSelected = nav.backAction;
+		} else {
+			actionBar.displayHomeAsUp = false;
+		}
 	}
 }
