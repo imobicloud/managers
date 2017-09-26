@@ -31,11 +31,12 @@ function updateActionBar(actionBar) {
 	}
 	
 	actionBar.subtitle = nav.subtitle || null;
-	actionBar.icon = 'appicon.png';
 	
 	if (nav.titleImage) {
-		actionBar.icon  = nav.titleImage;
+		actionBar.icon = nav.titleImage;
 		actionBar.setDisplayShowHomeEnabled(true);
+	} else {
+		actionBar.icon = null;
 	}
 	
 	nav.backgroundImage && (actionBar.backgroundImage = nav.backgroundImage);
