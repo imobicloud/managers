@@ -1,4 +1,4 @@
-exports.load = function load(win, nav, G) {
+exports.load = function (win, nav, G) {
   	if (nav.titleControl) {
 		win.titleControl = nav.titleControl;
 	} else if (nav.titleImage) {
@@ -66,3 +66,15 @@ function createNavButton(params, G) {
 		return params;
 	}
 }
+
+exports.toggleAI = function(win, position, params) {
+	var ai = Titanium.UI.createActivityIndicator(params);
+	if (position === 'right') {
+		win.setRightNavButton(ai);
+	} else if (position === 'left') {
+		win.setLeftNavButton(ai);
+	} else {
+		win.setTitleControl(ai);
+	}
+	ai.show();
+};

@@ -52,3 +52,7 @@ function updateActionBar(actionBar) {
 		}
 	}
 }
+
+exports.toggleAI = function(win, position, params) {
+	// TODO
+}

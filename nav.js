@@ -73,3 +73,4 @@ icon size:
 
 exports.load = navigation.load;
 exports.update = navigation.load;
+exports.toggleAI = navigation.toggleAI;
